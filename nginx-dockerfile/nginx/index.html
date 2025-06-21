@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>Hello Commit</title></head>
+<body style="text-align:center;">
+  <h1>Hello Commit Shir</h1>
+  <img src="logo.png" width="200" />
+  <p id="db-message">Loading...</p>
+  <script>
+    fetch("/api/greeting")
+      .then(res => res.json())
+      .then(data => document.getElementById("db-message").textContent = data.message)
+      .catch(() => document.getElementById("db-message").textContent = "Failed to load message.");
+  </script>
+</body>
+</html>
