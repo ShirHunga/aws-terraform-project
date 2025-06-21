@@ -177,7 +177,7 @@ resource "aws_network_acl_rule" "public1_outbound_db" {
 
 resource "aws_network_acl_rule" "public2_outbound_db" {
   network_acl_id = aws_network_acl.public_nacl.id
-  rule_number    = 230
+  rule_number    = 231
   protocol       = "tcp"
   rule_action    = "allow"
   cidr_block     = aws_subnet.private_subnet_2.cidr_block
@@ -292,7 +292,7 @@ resource "aws_security_group" "rds_sg" {
 
 # Creating RDS
 resource "aws_db_instance" "postgres" {
-  identifier             = "myspp-ostgres-db"
+  identifier             = var.rds_endpoint
   engine                 = "postgres"
   instance_class         = var.db_instance_class
   allocated_storage      = var.db_allocated_storage
@@ -313,9 +313,9 @@ resource "aws_db_instance" "postgres" {
 # Creating EKS
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "20.8.5"
+  version = "20.37.1"
 
-  cluster_name    = "my-eks-cluster"
+  cluster_name    = var.cluster_name
   cluster_version = "1.32"
 
   # Networking
@@ -363,5 +363,85 @@ module "eks" {
   tags = {
     Environment = "dev"
     Terraform   = "true"
+  }
+}
+
+# Set up kubenetes provider to deploy pods
+data "aws_eks_cluster" "cluster" {
+  name = var.cluster_name
+}
+
+data "aws_eks_cluster_auth" "cluster" {
+  name = var.cluster_name
+}
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+}
+
+# Initialize postgres RDS table
+resource "kubernetes_config_map" "init_sql" {
+  metadata {
+    name = "init-sql"
+  }
+
+  data = {
+    "init.sql" = file("${path.module}/init.sql")
+  }
+}
+
+resource "kubernetes_job" "init_db" {
+  metadata {
+    name = "init-db"
+  }
+
+  spec {
+    template {
+      metadata {
+        labels = {
+          app = "init-db"
+        }
+      }
+
+      spec {
+        restart_policy = "Never"
+
+        container {
+          name  = "psql-client"
+          image = "postgres:15"
+
+          command = ["psql"]
+          args = [
+            "-h", trimspace(split(":", aws_db_instance.postgres.endpoint)[0]),
+            "-p", "5432",
+            "-U", var.db_username,
+            "-d", var.db_name,
+            "-f", "/sql/init.sql"
+          ]
+
+          env {
+            name  = "PGPASSWORD"
+            value = var.db_password
+          }
+
+          volume_mount {
+            name       = "sql-volume"
+            mount_path = "/sql"
+          }
+        }
+
+        volume {
+          name = "sql-volume"
+
+          config_map {
+            name = kubernetes_config_map.init_sql.metadata[0].name
+          }
+        }
+      }
+    }
+
+    backoff_limit = 2
   }
 }

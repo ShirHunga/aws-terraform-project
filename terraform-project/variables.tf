@@ -33,7 +33,7 @@ variable "db_password" {
 }
 
 variable "db_name" {
-  default = "MyAPp"
+  default = "MyApp"
 }
 
 variable "db_instance_class" {
@@ -44,4 +44,16 @@ variable "db_instance_class" {
 variable "db_allocated_storage" {
   type    = number
   default = 20
+}
+
+variable "rds_endpoint" {
+  description = "The endpoint of the RDS instance"
+  type        = string
+  default = "my-postgres-db"
+}
+
+variable "cluster_name" {
+  description = "The name of the EKS cluster"
+  type        = string
+  default = "my-eks-cluster"
 }
