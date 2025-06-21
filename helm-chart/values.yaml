@@ -11,6 +11,6 @@ nginxConf:
 rds:
   host: my-postgres-db.cq34i08estv1.us-east-1.rds.amazonaws.com
   port: 5432
-  dbName: MyDB
+  dbName: MyApp
   username: postgres_user
   password: WouldIdeallyFetchFromVault123!
