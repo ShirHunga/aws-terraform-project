@@ -69,3 +69,13 @@ kubectl create secret tls nginx-tls \
 ~~~
 helm install myapp ./
 ~~~
+
+#### Upgrade helm chart
+~~~
+helm upgrade myapp ./
+~~~
+
+#### View created Load Balancer
+~~~
+kubectl get svc
+~~~

@@ -1,11 +1,11 @@
 image:
-    nginx: shirhun/nginx-image:v2
+  nginx: shirhun/nginx-image:v2
   python: shirhun/python-image
 
-python:
+python-conf:
   port: 8000
 
-    nginx: shirhun/nginx-image:v2
+nginx-conf:
   port: 443
 
 rds:
