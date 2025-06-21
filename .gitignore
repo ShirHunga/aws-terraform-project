@@ -1,0 +1,38 @@
+# Terraform
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+*.tfvars
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+
+# Python cache (in case any scripts exist)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node.js (in case frontend stuff is added later)
+node_modules/
+dist/
+.env
+
+# Lock files
+*.lock
+
