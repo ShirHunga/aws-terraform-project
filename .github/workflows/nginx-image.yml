@@ -10,9 +10,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/nginx-image
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Read and increment version number
+        id: version
+        run: |
+          VERSION_FILE=nginx-dockerfile/nginx/nginx-version.txt
+          if [ ! -f "$VERSION_FILE" ]; then echo 0 > "$VERSION_FILE"; fi
+          VERSION=$(cat "$VERSION_FILE")
+          NEXT_VERSION=$((VERSION + 1))
+          echo "$NEXT_VERSION" > "$VERSION_FILE"
+          echo "version_tag=v$NEXT_VERSION" >> $GITHUB_OUTPUT
 
       - name: Log in to DockerHub
         uses: docker/login-action@v3
@@ -26,4 +38,18 @@ jobs:
           context: ./nginx-dockerfile/nginx
           file: ./nginx-dockerfile/nginx/dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/nginx-image:latest
+          tags: ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version_tag }}
+
+      - name: Update Helm values.yaml with new image tag
+        run: |
+          sed -i 's|nginx:.*|nginx: ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version_tag }}|' helm-chart/values.yaml
+
+      - name: Commit and push updated values
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add helm-chart/values.yaml nginx-dockerfile/nginx/nginx-version.txt
+          git commit -m "Update NGINX image tag to ${{ steps.version.outputs.version_tag }}" || echo "Nothing to commit"
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:${{ github.ref_name }}
