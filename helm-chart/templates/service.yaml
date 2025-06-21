@@ -6,7 +6,7 @@ spec:
   type: LoadBalancer
   ports:
     - port: 443
-      targetPort: {{ .Values.nginx.port }}
+      targetPort: {{ .Values.nginxConf.port }}
       protocol: TCP
       name: https
   selector:

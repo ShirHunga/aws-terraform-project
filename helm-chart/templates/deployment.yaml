@@ -16,7 +16,7 @@ spec:
         - name: python
           image: {{ .Values.image.python }}
           ports:
-            - containerPort: {{ .Values.python-conf.port }}
+            - containerPort: {{ .Values.pythonConf.port }}
           env:
             - name: DB_HOST
               value: {{ .Values.rds.host }}
@@ -37,7 +37,7 @@ spec:
         - name: nginx
           image: {{ .Values.image.nginx }}
           ports:
-            - containerPort: {{ .Values.nginx-conf.port }}
+            - containerPort: {{ .Values.nginxConf.port }}
           volumeMounts:
             - name: tls-certs
               mountPath: "/etc/nginx/certs"

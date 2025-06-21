@@ -1,13 +1,15 @@
 from fastapi import FastAPI
 import asyncpg
 import os
-import ssl 
+import ssl
 
 app = FastAPI()
 
 @app.get("/api/greeting")
 async def get_greeting():
     ssl_context = ssl.create_default_context()
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
 
     conn = await asyncpg.connect(
         host=os.getenv("DB_HOST"),
