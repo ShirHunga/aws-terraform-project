@@ -6,6 +6,9 @@ on:
     paths:
       - 'nginx-dockerfile/nginx/**'
   workflow_dispatch:
+  
+permissions:
+  contents: write
 
 jobs:
   build:
