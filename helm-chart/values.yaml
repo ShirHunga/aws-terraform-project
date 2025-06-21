@@ -1,6 +1,6 @@
 image:
   nginx: shirhun/nginx-image:v3
-  python: shirhun/python-image:v1
+  python: shirhun/python-image:v2
 
 pythonConf:
   port: 8000
