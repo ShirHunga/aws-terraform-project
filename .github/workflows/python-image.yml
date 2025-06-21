@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'nginx-dockerfile/python/**'
+  workflow_dispatch:
 
 jobs:
   build:
