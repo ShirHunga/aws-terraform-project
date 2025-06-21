@@ -64,3 +64,8 @@ kubectl create secret tls nginx-tls \
   --cert=tls.crt \
   --key=tls.key
 ~~~
+
+### Deploy helm chart
+~~~
+helm install myapp ./
+~~~
