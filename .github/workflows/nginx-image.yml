@@ -45,8 +45,7 @@ jobs:
 
       - name: Update Helm values.yaml with new image tag
         run: |
-          sed -i 's|^\s*nginx:.*|    nginx: ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version_tag }}|' helm-chart/values.yaml
-
+          sed -i 's|nginx:.*|nginx: ${{ env.IMAGE_NAME }}:${{ steps.version.outputs.version_tag }}|' helm-chart/values.yaml
       - name: Commit and push updated values
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
