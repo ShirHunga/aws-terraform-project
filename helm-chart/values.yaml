@@ -1,5 +1,5 @@
 image:
-  nginx: shirhun/nginx-image:v2
+  nginx: shirhun/nginx-image:v3
   python: shirhun/python-image
 
 python-conf:
