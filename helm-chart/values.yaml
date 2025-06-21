@@ -1,0 +1,16 @@
+image:
+  nginx: shirhun/nginx-image
+  python: shirhun/python-image
+
+python:
+  port: 8000
+
+nginx:
+  port: 443
+
+rds:
+  host: my-postgres-db.cq34i08estv1.us-east-1.rds.amazonaws.com
+  port: 5432
+  dbName: mydb
+  username: postgres-user
+  password: WouldIdeallyFetchFromVault123!

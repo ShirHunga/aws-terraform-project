@@ -1,7 +1,0 @@
-docker run -p 8080:80 \
-  -e DB_HOST=your-db-host.rds.amazonaws.com \
-  -e DB_PORT=5432 \
-  -e DB_NAME=yourdbname \
-  -e DB_USER=youruser \
-  -e DB_PASS=yourpassword \
-  openresty-pg

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-app
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-app
+    spec:
+      containers:
+        - name: python
+          image: {{ .Values.image.python }}
+          ports:
+            - containerPort: {{ .Values.python.port }}
+          env:
+            - name: DB_HOST
+              value: {{ .Values.rds.host }}
+            - name: DB_PORT
+              value: "{{ .Values.rds.port }}"
+            - name: DB_NAME
+              value: {{ .Values.rds.dbName }}
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-rds
+                  key: username
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-rds
+                  key: password
+        - name: nginx
+          image: {{ .Values.image.nginx }}
+          ports:
+            - containerPort: {{ .Values.nginx.port }}
+          volumeMounts:
+            - name: tls-certs
+              mountPath: "/etc/nginx/certs"
+              readOnly: true
+      volumes:
+        - name: tls-certs
+          secret:
+            secretName: nginx-tls
