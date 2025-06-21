@@ -57,3 +57,10 @@ openssl req -x509 -newkey rsa:4096 -nodes \
   -days 365 \
   -subj "/CN=localhost"
 ~~~
+
+#### Add the generated certificate to kubernetes as a secret
+~~~
+kubectl create secret tls nginx-tls \
+  --cert=tls.crt \
+  --key=tls.key
+~~~
